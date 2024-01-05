@@ -65,7 +65,7 @@ NOCACHE;
 CREATE SEQUENCE seq_shopping_session_session_id
 START WITH 1
 INCREMENT BY 1
-NOCACHE;
+CACHE 1000;
 
 -- Sequence for order_details.order_details_id column value
 
@@ -107,3 +107,18 @@ NOCACHE;
 ********************************************************************************/
 
 -- W O R K   I N    P R O G R E S S --
+
+CREATE TABLE store_users
+(
+ user_id        INTEGER DEFAULT seq_store_users_id.nextval PRIMARY KEY,
+ first_name     VARCHAR2(80) NOT NULL,
+ middle_name    VARCHAR2(80),
+ last_name      VARCHAR2(80) NOT NULL,
+ phone_number   VARCHAR2(30) UNIQUE NOT NULL 
+                                    CONSTRAINT check_phone_number_store_users 
+                                    CHECK (REGEXP_LIKE(phone_number, '^\d{3}.\d{3}.\d{4}$')),
+ email          VARCHAR2(80) UNIQUE NOT NULL,
+ username       VARCHAR2(30) UNIQUE NOT NULL,
+ user_password  VARCHAR2(30) NOT NULL,
+ registered_at  TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL
+);
