@@ -414,3 +414,49 @@ REFERENCES adresses (adress_id);
 /***
 * W O R K     I N     P R O G R E E S
 ***/
+
+-- DECLARE
+-- 	random_string VARCHAR(255);
+-- BEGIN
+-- 	random_string := DBMS_RANDOM.STRING('A', 6);
+-- 	DBMS_OUTPUT.PUT_LINE(random_string);
+-- END;
+
+-- CREATE SEQUENCE seq_store_users_id
+-- START WITH 1
+-- INCREMENT BY 1
+-- CACHE 1000;
+
+-- CREATE TABLE store_users (
+-- 	user_id INTEGER DEFAULT seq_store_users_id.nextval PRIMARY KEY,
+--  	first_name VARCHAR2(80) NOT NULL,
+-- 	phone_number VARCHAR2(30) UNIQUE NOT NULL 
+--                         CONSTRAINT check_phone_number_store_users 
+--                         CHECK (REGEXP_LIKE(phone_number, '^\d{1-3}.\d{1-4}(.\d+})?$'))
+-- )
+
+-- DECLARE
+--    random_name VARCHAR2(80);
+-- 	random_segment_phonenumber VARCHAR2(3);
+-- BEGIN
+--    FOR loop_counter IN 1..6
+--    LOOP
+--       DBMS_OUTPUT.PUT_LINE(loop_counter);
+
+-- 	  random_name := DBMS_RANDOM.STRING('A', 8);
+-- 	  random_segment_phonenumber := DBMS_RANDOM.STRING('X', 3);
+
+--       INSERT INTO store_users (first_name, phone_number) values (random_name, random_segment_phonenumber || "." || random_segment_phonenumber);
+
+--    END LOOP;
+--    COMMIT; -- No Commit inside Loop
+-- EXCEPTION
+--    WHEN VALUE_ERROR THEN
+--       DBMS_OUTPUT.PUT_LINE ('INSERTION of Data caused VALUE_ERROR');
+-- END;
+
+-- CREATE VIEW all_user_first_name_and_phone_number(first_name, phone_number) AS
+-- SELECT first_name, phone_number
+-- FROM store_users;
+
+SELECT * FROM all_user_first_name_and_phone_number;
