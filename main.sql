@@ -9,12 +9,17 @@
 /*******************************************************************************
    Drop database if it exists
 ********************************************************************************/
+DROP DATABASE online_store IF EXISTS;
 
-DROP USER AdminStore CASCADE;
+/*******************************************************************************
+   Create database
+********************************************************************************/
+CREATE DATABASE online_store CHARACTER SET latin1 COLLATE latin1_swedish_ci;
 
 /*******************************************************************************
    Create User
 ********************************************************************************/
+DROP USER AdminStore CASCADE;
 
 CREATE USER AdminStore
 IDENTIFIED BY 1234
@@ -129,13 +134,14 @@ CREATE TABLE store_users (
 
 CREATE TABLE supplier (
    supplier_id INTEGER DEFAULT seq_suppliers_supplier_id.nextval PRIMARY KEY,
-   supplier_address VARCHAR2(255) NOT NULL,
+   supplier_address VARCHAR2(255) NOT NULL DEFAULT '',
    company_name VARCHAR2(80) NOT NULL DEFAULT '',
-   city VARCHAR2(32) NOT NULL DEFAULT '',
+   city VARCHAR2(32),
    country VARCHAR2(32) NOT NULL DEFAULT '',
    phone_number VARCHAR2(30) UNIQUE NOT NULL 
                                     CONSTRAINT check_phone_number_store_users 
                                     CHECK (REGEXP_LIKE(phone_number, '^\d{3}.\d{3}.\d{4}$')),
+   website_url varchar(255) DEFAULT '',
 )
 
 CREATE TABLE product (
