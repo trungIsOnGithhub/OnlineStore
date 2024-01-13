@@ -2,8 +2,7 @@
    sample-database-online-store - Version 1.0
    
    Script: main.sql
-   Description: Creates the database structure.
-   Template By: Michal Wisniewski
+   Description: Creates the database structure
    Assignment: Project to learn and practice designing a simple database app with more specilized features
 ********************************************************************************/
 
@@ -101,41 +100,59 @@ START WITH 1
 INCREMENT BY 1
 NOCACHE;
 
+-- Sequence for suppliers.supplier_id column value
+
+CREATE SEQUENCE seq_suppliers_supplier_id
+START WITH 1
+INCREMENT BY 1
+NOCACHE;
+
 /*******************************************************************************
    Create Tables
 ********************************************************************************/
 
 -- W O R K   I N    P R O G R E S S --
 
-CREATE TABLE store_users
-(
- user_id        INTEGER DEFAULT seq_store_users_id.nextval PRIMARY KEY,
- first_name     VARCHAR2(80) NOT NULL,
- middle_name    VARCHAR2(80),
- last_name      VARCHAR2(80) NOT NULL,
- phone_number   VARCHAR2(30) UNIQUE NOT NULL 
+CREATE TABLE store_users (
+   user_id        INTEGER DEFAULT seq_store_users_id.nextval PRIMARY KEY,
+   first_name     VARCHAR2(80) NOT NULL,
+   middle_name    VARCHAR2(80),
+   last_name      VARCHAR2(80) NOT NULL,
+   phone_number   VARCHAR2(30) UNIQUE NOT NULL 
                                     CONSTRAINT check_phone_number_store_users 
                                     CHECK (REGEXP_LIKE(phone_number, '^\d{3}.\d{3}.\d{4}$')),
- email          VARCHAR2(80) UNIQUE NOT NULL,
- username       VARCHAR2(30) UNIQUE NOT NULL,
- user_password  VARCHAR2(30) NOT NULL,
- registered_at  TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL
+   email          VARCHAR2(80) UNIQUE NOT NULL,
+   username       VARCHAR2(30) UNIQUE NOT NULL,
+   user_password  VARCHAR2(30) NOT NULL,
+   registered_at  TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL
 );
 
-CREATE TABLE product
-(
- product_id     INTEGER DEFAULT seq_product_product_id.nextval PRIMARY KEY,
- product_name   VARCHAR2(100),
- product_desc   VARCHAR2(200),
- category_id    INTEGER NOT NULL, 
- sku            VARCHAR2(100) NOT NULL,
- price          NUMBER NOT NULL,
- discount_id    INTEGER NOT NULL,
- created_at     TIMESTAMP,
- last_modified  TIMESTAMP,
- deleted_at     TIMESTAMP
-);
+CREATE TABLE supplier (
+   supplier_id INTEGER DEFAULT seq_suppliers_supplier_id.nextval PRIMARY KEY,
+   supplier_address VARCHAR2(255) NOT NULL,
+   company_name VARCHAR2(80) NOT NULL DEFAULT '',
+   city VARCHAR2(32) NOT NULL DEFAULT '',
+   country VARCHAR2(32) NOT NULL DEFAULT '',
+   phone_number VARCHAR2(30) UNIQUE NOT NULL 
+                                    CONSTRAINT check_phone_number_store_users 
+                                    CHECK (REGEXP_LIKE(phone_number, '^\d{3}.\d{3}.\d{4}$')),
+)
 
+CREATE TABLE product (
+   product_id     INTEGER DEFAULT seq_product_product_id.nextval PRIMARY KEY,
+   product_name   VARCHAR2(100),
+   product_desc   VARCHAR2(200),
+   category_id    INTEGER NOT NULL,
+   sku            VARCHAR2(100) NOT NULL,
+   price          NUMBER NOT NULL,
+   supplier_id    INTEGER NOT NULL
+   discount_id    INTEGER NOT NULL,
+   created_at     TIMESTAMP,
+   last_modified  TIMESTAMP,
+   deleted_at     TIMESTAMP,
+   CONSTRAINT fk_supplier_id_tbl_product FOREIGN KEY (supplier_id)
+   REFERENCES suppliers (supplier_id)
+);
 
 
 CREATE TABLE discount
@@ -153,16 +170,15 @@ CREATE TABLE discount
 
 
 
-CREATE TABLE cart_item
-(
- cart_item_id   INTEGER DEFAULT seq_cart_item_cart_item_id.nextval PRIMARY KEY,
- session_id     INTEGER NOT NULL,
- product_id     INTEGER NOT NULL,
- quantity       INTEGER NOT NULL,
- created_at     TIMESTAMP,
- modified_at    TIMESTAMP,
- CONSTRAINT fk_product_id_tbl_cart_item FOREIGN KEY (product_id)
- REFERENCES product (product_id)
+CREATE TABLE cart_item (
+   cart_item_id   INTEGER DEFAULT seq_cart_item_cart_item_id.nextval PRIMARY KEY,
+   session_id     INTEGER NOT NULL,
+   product_id     INTEGER NOT NULL,
+   quantity       INTEGER NOT NULL,
+   created_at     TIMESTAMP,
+   modified_at    TIMESTAMP,
+   CONSTRAINT fk_product_id_tbl_cart_item FOREIGN KEY (product_id)
+   REFERENCES product (product_id)
 );
 
 
@@ -224,8 +240,6 @@ CREATE TABLE payment_details
  CONSTRAINT fk_order_id_tbl_payment_details FOREIGN KEY (order_id)
  REFERENCES order_details (order_details_id)
 );
-
-
 
 CREATE TABLE product_category
 (
@@ -391,24 +405,21 @@ REFERENCES adresses (adress_id);
 
 -- -- Adresses table
 
--- BEGIN
---    FOR loop_counter IN 1..5
---    LOOP
---       DBMS_OUTPUT.PUT_LINE(loop_counter);
+BEGIN
+   FOR loop_counter IN 1..5
+   LOOP
+      DBMS_OUTPUT.PUT_LINE(loop_counter);
 
---       random_date :=  DBMS_RANDOM.VALUE(TO_CHAR(DATE '1980-01-01','J') ,TO_CHAR(CURRENT_DATE));
+      random_date :=  DBMS_RANDOM.VALUE(TO_CHAR(DATE '1980-01-01','J') ,TO_CHAR(CURRENT_DATE));
 
---       INSERT INTO adresses (line_1, line_2, city, zip_code, province, country) values (DBMS_RANDOM.STRING('A', 32), null, DBMS_RANDOM.STRING('A', 16),
---                                                                                  DBMS_RANDOM.STRING('A', 8), DBMS_RANDOM.STRING('A', 16), DBMS_RANDOM.STRING('A', 6));
---    END LOOP;
---    COMMIT; -- No Commit inside Loop
--- EXCEPTION
---    WHEN VALUE_ERROR THEN
---       DBMS_OUTPUT.PUT_LINE ('INSERTION of Data caused VALUE_ERROR');
--- END;
-
-
-
+      INSERT INTO adresses (line_1, line_2, city, zip_code, province, country) values (DBMS_RANDOM.STRING('A', 32), null, DBMS_RANDOM.STRING('A', 16),
+                                                                                 DBMS_RANDOM.STRING('A', 8), DBMS_RANDOM.STRING('A', 16), DBMS_RANDOM.STRING('A', 6));
+   END LOOP;
+   COMMIT; -- No Commit inside Loop
+EXCEPTION
+   WHEN VALUE_ERROR THEN
+      DBMS_OUTPUT.PUT_LINE ('INSERTION of Data caused VALUE_ERROR');
+END;
 
 
 /***
@@ -427,36 +438,36 @@ REFERENCES adresses (adress_id);
 -- INCREMENT BY 1
 -- CACHE 1000;
 
--- CREATE TABLE store_users (
--- 	user_id INTEGER DEFAULT seq_store_users_id.nextval PRIMARY KEY,
---  	first_name VARCHAR2(80) NOT NULL,
--- 	phone_number VARCHAR2(30) UNIQUE NOT NULL 
---                         CONSTRAINT check_phone_number_store_users 
---                         CHECK (REGEXP_LIKE(phone_number, '^\d{1-3}.\d{1-4}(.\d+})?$'))
--- )
+CREATE TABLE store_users (
+	user_id INTEGER DEFAULT seq_store_users_id.nextval PRIMARY KEY,
+ 	first_name VARCHAR2(80) NOT NULL,
+	phone_number VARCHAR2(30) UNIQUE NOT NULL 
+                        CONSTRAINT check_phone_number_store_users 
+                        CHECK (REGEXP_LIKE(phone_number, '^\d{1-3}.\d{1-4}(.\d+})?$'))
+)
 
--- DECLARE
---    random_name VARCHAR2(80);
--- 	random_segment_phonenumber VARCHAR2(3);
--- BEGIN
---    FOR loop_counter IN 1..6
---    LOOP
---       DBMS_OUTPUT.PUT_LINE(loop_counter);
+DECLARE
+   random_name VARCHAR2(80);
+	random_segment_phonenumber VARCHAR2(3);
+BEGIN
+   FOR loop_counter IN 1..6
+   LOOP
+      DBMS_OUTPUT.PUT_LINE(loop_counter);
 
--- 	  random_name := DBMS_RANDOM.STRING('A', 8);
--- 	  random_segment_phonenumber := DBMS_RANDOM.STRING('X', 3);
+	  random_name := DBMS_RANDOM.STRING('A', 8);
+	  random_segment_phonenumber := DBMS_RANDOM.STRING('X', 3);
 
---       INSERT INTO store_users (first_name, phone_number) values (random_name, random_segment_phonenumber || "." || random_segment_phonenumber);
+      INSERT INTO store_users (first_name, phone_number) values (random_name, random_segment_phonenumber || "." || random_segment_phonenumber);
 
---    END LOOP;
---    COMMIT; -- No Commit inside Loop
--- EXCEPTION
---    WHEN VALUE_ERROR THEN
---       DBMS_OUTPUT.PUT_LINE ('INSERTION of Data caused VALUE_ERROR');
--- END;
+   END LOOP;
+   COMMIT; -- No Commit inside Loop
+EXCEPTION
+   WHEN VALUE_ERROR THEN
+      DBMS_OUTPUT.PUT_LINE ('INSERTION of Data caused VALUE_ERROR');
+END;
 
--- CREATE VIEW all_user_first_name_and_phone_number(first_name, phone_number) AS
--- SELECT first_name, phone_number
--- FROM store_users;
+CREATE VIEW all_user_first_name_and_phone_number(first_name, phone_number) AS
+SELECT first_name, phone_number
+FROM store_users;
 
 SELECT * FROM all_user_first_name_and_phone_number;
