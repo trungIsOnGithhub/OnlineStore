@@ -188,17 +188,14 @@ CREATE TABLE cart_item (
 );
 
 
-
-CREATE TABLE shopping_session
-(
- session_id     INTEGER DEFAULT seq_shopping_session_session_id.nextval PRIMARY KEY,
- user_id        INTEGER NOT NULL,
- created_at     TIMESTAMP,
- modified_at    TIMESTAMP,
- CONSTRAINT fk_user_id_tbl_shopping_session FOREIGN KEY (user_id)
- REFERENCES store_users (user_id)
+CREATE TABLE shopping_session (
+   session_id INTEGER DEFAULT seq_shopping_session_session_id.nextval PRIMARY KEY,
+   user_id INTEGER NOT NULL,
+   created_at TIMESTAMP,
+   modified_at TIMESTAMP,
+   CONSTRAINT fk_user_id_tbl_shopping_session FOREIGN KEY (user_id)
+   REFERENCES store_users (user_id)
 );
-
 
 
 CREATE TABLE order_details 
